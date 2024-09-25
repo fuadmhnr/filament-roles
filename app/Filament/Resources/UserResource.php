@@ -7,6 +7,7 @@ use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Resources\Pages\CreateRecord;
@@ -34,19 +35,27 @@ class UserResource extends Resource
                 Section::make()
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('email')
-                        ->email()
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\DateTimePicker::make('email_verified_at'),
-                    Forms\Components\TextInput::make('password')
-                        ->password()
-                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                        ->dehydrated(fn ($state) => filled($state))
-                        ->required(fn (Page $livewire) => ($livewire instanceof CreateRecord))
-                        ->maxLength(255),
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\DateTimePicker::make('email_verified_at')->native(false),
+                        Forms\Components\TextInput::make('password')
+                            ->password()
+                            ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                            ->dehydrated(fn($state) => filled($state))
+                            ->required(fn(Page $livewire) => ($livewire instanceof CreateRecord))
+                            ->maxLength(255),
+                        Select::make('roles')
+                            ->multiple()
+                            ->relationship('roles', 'name')
+                            ->preload(),
+                        Select::make('permissions')
+                            ->multiple()
+                            ->relationship('permissions', 'name')
+                            ->preload(),
                     ])->columns(2)
             ]);
     }
